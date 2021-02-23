@@ -11,9 +11,15 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import numeral from 'numeral';
 
 import SafeAreaWrapper from '@components/SafeAreaWrapper';
+import MonthPicker from './MonthPicker';
 
-import {JOOMLA, PROGRESS_BAR_GRAY} from '@constants/Colors';
-import {MAIN_EXPENSES_DATA} from '@constants/Data';
+import {
+  JOOMLA,
+  PROGRESS_BAR_GRAY,
+  BRIGHT_ORANGE,
+  DULL_ORANGE,
+} from '@constants/Colors';
+import {MAIN_EXPENSES_DATA, MONTH_PICKER_DATA} from '@constants/Data';
 import {MAIN_DATA_KEY} from '@constants/Constants';
 import {getCategoryIcon} from '@utilities/Utility';
 
@@ -100,6 +106,7 @@ const Dashboard = ({navigation}) => {
     currentShortMonth.toUpperCase(),
   );
   const [monthTotalExpense, setMonthTotalExpense] = useState(null);
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
 
   // Init
   useEffect(() => {
@@ -155,18 +162,28 @@ const Dashboard = ({navigation}) => {
     let totalExpense = 0;
 
     // Valid type checking
-    if (!(data instanceof Array)) return;
+    if (!(data instanceof Array)) {
+      setListData(null);
+      setMonthTotalExpense(numeral(0).format('0,0.00'));
+
+      return;
+    }
 
     // Data availability checking
-    if (data.length < 1) return;
+    if (data.length < 1) {
+      setListData(null);
+      setMonthTotalExpense(numeral(0).format('0,0.00'));
+
+      return;
+    }
 
     // Sort by date
     data.sort((rec1, rec2) => {
-      return rec1.date - rec2.date;
+      return new Date(rec2.date) - new Date(rec1.date);
     });
 
     // Data massaging
-    data.forEach((item) => {
+    data.forEach((item, index) => {
       const date = new Date(item.date);
       const expDate = date.getDate();
       const expMonth = date.getMonth() + 1;
@@ -185,6 +202,8 @@ const Dashboard = ({navigation}) => {
         shortDate: title,
         icon,
         formattedAmount: numeral(amount).format('0,0.00'),
+        isFirstItem: index === 0,
+        isLastItem: data.length - 1 === index,
       });
     });
 
@@ -217,6 +236,23 @@ const Dashboard = ({navigation}) => {
 
   const onMonthPress = () => {
     console.log('[Dashboard] >> [onMonthPress]');
+
+    setShowMonthPicker(true);
+  };
+
+  const onMonthPickerSelect = ({key, shortMonthName}) => {
+    console.log('[Dashboard] >> [onMonthPickerSelect]');
+
+    setShowMonthPicker(false);
+
+    setShortMonthKey(key);
+    setShortMonth(shortMonthName);
+  };
+
+  const onMonthPickerClose = () => {
+    console.log('[Dashboard] >> [onMonthPickerClose]');
+
+    setShowMonthPicker(false);
   };
 
   const addExpense = () => {
@@ -271,10 +307,21 @@ const Dashboard = ({navigation}) => {
           <EmptyListView />
         )}
 
+        {/* Month selection picker */}
+        <MonthPicker
+          visible={showMonthPicker}
+          preselectedValue={shortMonthKey}
+          //   shortMonthName={shortMonth}
+          onSelect={onMonthPickerSelect}
+          onClose={onMonthPickerClose}
+        />
+
         {/* Floating Plus Icon */}
-        <TouchableOpacity style={Style.addIconView} onPress={addExpense}>
-          <FontAwesomeIcon icon={['fas', 'plus']} color="#2a5298" size={22} />
-        </TouchableOpacity>
+        {!showMonthPicker && (
+          <TouchableOpacity style={Style.addIconView} onPress={addExpense}>
+            <FontAwesomeIcon icon={['fas', 'plus']} color="#2a5298" size={22} />
+          </TouchableOpacity>
+        )}
       </>
     </SafeAreaWrapper>
   );
@@ -282,13 +329,9 @@ const Dashboard = ({navigation}) => {
 
 function ListItem({item}) {
   return (
-    <View style={Style.listItemViewCls}>
-      <FontAwesomeIcon
-        icon={item.icon}
-        color="#f25c54"
-        size={25}
-        // style={Style.settingsIconCls}
-      />
+    <View
+      style={[Style.listItemViewCls, {marginBottom: item.isLastItem ? 50 : 0}]}>
+      <FontAwesomeIcon icon={item.icon} color={BRIGHT_ORANGE} size={25} />
       <Text style={Style.listItemDescription}>{item.description}</Text>
       <Text style={Style.listItemAmount}>{item.formattedAmount}</Text>
     </View>
@@ -329,7 +372,7 @@ const Style = StyleSheet.create({
   },
 
   listCls: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
 
   addIconView: {
@@ -343,7 +386,7 @@ const Style = StyleSheet.create({
 
     position: 'absolute',
     right: 20,
-    bottom: 50,
+    bottom: 30,
   },
 
   headerViewCls: {
@@ -397,7 +440,7 @@ const Style = StyleSheet.create({
 
   sectionHeaderCls: {
     fontSize: 20,
-    color: '#fca311',
+    color: DULL_ORANGE,
     textAlign: 'right',
     backgroundColor: 'transparent',
     paddingVertical: 10,

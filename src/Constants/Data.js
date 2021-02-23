@@ -34,8 +34,107 @@ export const CATEGORY_ICON_MAPPER = {
   CATG_HOLIDAY: ['fas', 'swimmer'],
 };
 
+export const MONTH_PICKER_DATA = [
+  {
+    name: 'January',
+    shortName: 'Jan',
+    value: 'JAN',
+  },
+  {
+    name: 'February',
+    shortName: 'Feb',
+    value: 'FEB',
+  },
+  {
+    name: 'March',
+    shortName: 'Mar',
+    value: 'MAR',
+  },
+  {
+    name: 'April',
+    shortName: 'Apr',
+    value: 'APR',
+  },
+  {
+    name: 'May',
+    shortName: 'May',
+    value: 'MAY',
+  },
+  {
+    name: 'June',
+    shortName: 'Jun',
+    value: 'JUN',
+  },
+  {
+    name: 'July',
+    shortName: 'Jul',
+    value: 'JUL',
+  },
+  {
+    name: 'August',
+    shortName: 'Aug',
+    value: 'AUG',
+  },
+  {
+    name: 'September',
+    shortName: 'Sep',
+    value: 'SEP',
+  },
+  {
+    name: 'October',
+    shortName: 'Oct',
+    value: 'OCT',
+  },
+  {
+    name: 'November',
+    shortName: 'Nov',
+    value: 'NOV',
+  },
+  {
+    name: 'December',
+    shortName: 'Dec',
+    value: 'DEC',
+  },
+];
+
 export const MAIN_EXPENSES_DATA = {
-  JAN: [],
+  JAN: [
+    {
+      id: '11',
+      description: 'Client visit dinner payment',
+      category: CATG_FOOD,
+      amount: 150,
+      date: new Date('2021-01-24'),
+    },
+    {
+      id: '12',
+      description: 'Beach Visit Expense',
+      category: CATG_HOLIDAY,
+      amount: 2000,
+      date: new Date('2021-01-24'),
+    },
+    {
+      id: '13',
+      description: 'Data recharge & Wi-FI payment',
+      category: CATG_UTILITY,
+      amount: 1102,
+      date: new Date('2021-01-22'),
+    },
+    {
+      id: '14',
+      description: 'Shop sale purchase',
+      category: CATG_SHOPPING,
+      amount: 890,
+      date: new Date('2021-01-25'),
+    },
+    {
+      id: '15',
+      description: 'Meals Lunch Purchase',
+      category: CATG_FOOD,
+      amount: 2250,
+      date: new Date('2021-01-11'),
+    },
+  ],
   FEB: [
     {
       id: '1',
@@ -53,7 +152,8 @@ export const MAIN_EXPENSES_DATA = {
     },
     {
       id: '3',
-      description: 'Water Bill I am adding  a really long text to see how it appears on my device.',
+      description:
+        'Water Bill I am adding  a really long text to see how it appears on my device.',
       category: CATG_UTILITY,
       amount: 196,
       date: new Date('2021-02-22'),
@@ -71,6 +171,27 @@ export const MAIN_EXPENSES_DATA = {
       category: CATG_FOOD,
       amount: 2250,
       date: new Date('2021-02-21'),
+    },
+    {
+      id: '6',
+      description: 'Electricity bill payment',
+      category: CATG_UTILITY,
+      amount: 196,
+      date: new Date('2021-02-23'),
+    },
+    {
+      id: '7',
+      description: 'Amazon electrical shopping',
+      category: CATG_SHOPPING,
+      amount: 890,
+      date: new Date('2021-02-25'),
+    },
+    {
+      id: '8',
+      description: 'Friday Lunch and snacks expense',
+      category: CATG_FOOD,
+      amount: 2250,
+      date: new Date('2021-02-24'),
     },
   ],
   MAR: [],
