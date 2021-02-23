@@ -90,13 +90,14 @@ function EmptyListView() {
 }
 
 const Dashboard = ({navigation}) => {
+  const currentShortMonth = new Date().toLocaleString('default', {
+    month: 'short',
+  });
   const [mainData, setMainData] = useState(null);
   const [listData, setListData] = useState(null);
-  const [shortMonth, setShortMonth] = useState(
-    new Date().toLocaleString('default', {month: 'short'}),
-  );
+  const [shortMonth, setShortMonth] = useState(currentShortMonth);
   const [shortMonthKey, setShortMonthKey] = useState(
-    new Date().toLocaleString('default', {month: 'short'}).toUpperCase(),
+    currentShortMonth.toUpperCase(),
   );
   const [monthTotalExpense, setMonthTotalExpense] = useState(null);
 
