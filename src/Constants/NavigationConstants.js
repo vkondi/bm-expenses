@@ -4,3 +4,4 @@
  */
 
 export const DASHBOARD = 'Dashboard';
+export const DETAILS_VIEW = 'DetailsView';

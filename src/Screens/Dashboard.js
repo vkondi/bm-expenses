@@ -19,9 +19,10 @@ import {
   BRIGHT_ORANGE,
   DULL_ORANGE,
 } from '@constants/Colors';
-import {MAIN_EXPENSES_DATA, MONTH_PICKER_DATA} from '@constants/Data';
+import {MAIN_EXPENSES_DATA} from '@constants/Data';
 import {MAIN_DATA_KEY} from '@constants/Constants';
 import {getCategoryIcon} from '@utilities/Utility';
+import {DETAILS_VIEW} from '@constants/NavigationConstants';
 
 const Header = ({onFilterPress, onSettingsPress, onGraphPress}) => {
   return (
@@ -258,8 +259,13 @@ const Dashboard = ({navigation}) => {
   const addExpense = () => {
     console.log('[Dashboard] >> [addExpense]');
 
+    navigation.navigate(DETAILS_VIEW, {
+      shortMonthKey,
+      mode: 'ADD',
+    });
+
     // TEMPORARILY USING THIS HANDLER TO CLEAR STORAGE
-    clearAsyncStorage();
+    // clearAsyncStorage();
   };
 
   const clearAsyncStorage = async () => {
@@ -353,7 +359,8 @@ const Style = StyleSheet.create({
   listItemDescription: {
     flex: 1,
     marginHorizontal: 10,
-    fontSize: 20,
+    // fontSize: 20,
+    lineHeight: 20,
     color: '#1e3c72',
   },
 
@@ -378,7 +385,7 @@ const Style = StyleSheet.create({
   addIconView: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: PROGRESS_BAR_GRAY,
+    backgroundColor: DULL_ORANGE,
 
     height: 60,
     width: 60,
@@ -439,11 +446,14 @@ const Style = StyleSheet.create({
   },
 
   sectionHeaderCls: {
-    fontSize: 20,
+    fontSize: 18,
+    lineHeight: 25,
     color: DULL_ORANGE,
     textAlign: 'right',
     backgroundColor: 'transparent',
-    paddingVertical: 10,
+    paddingTop: 10,
+    fontWeight: '600',
+    letterSpacing: 2,
   },
 });
 

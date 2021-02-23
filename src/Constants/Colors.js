@@ -7,6 +7,7 @@ export const OVERLAY_BG = 'rgba(0,0,0, 0.8)';
 export const DARK_BLUE = '#1e3c72';
 export const BRIGHT_ORANGE = '#f25c54';
 export const DULL_ORANGE = '#fca311';
+export const OFF_WHITE = '#f8f8f8';
 
 // Gradient Colors
 export const JOOMLA = ['#1e3c72', '#2a5298'];
