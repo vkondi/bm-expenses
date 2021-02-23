@@ -6,4 +6,4 @@ export const GRAY_GAINSBORO = '#E0E0E0';
 export const OVERLAY_BG = 'rgba(0,0,0, 0.8)';
 
 // Gradient Colors
-export const MIRAGE = ['#16222A', '#3A6073'];
+export const JOOMLA = ['#1e3c72', '#2a5298'];
