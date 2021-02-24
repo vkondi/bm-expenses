@@ -23,7 +23,7 @@ import {
 import {MAIN_EXPENSES_DATA} from '@constants/Data';
 import {MAIN_DATA_KEY} from '@constants/Constants';
 import {getCategoryIcon} from '@utilities/Utility';
-import {DETAILS_VIEW} from '@constants/NavigationConstants';
+import {DETAILS_VIEW, CHART_VIEW} from '@constants/NavigationConstants';
 
 const Header = ({
   filterValue,
@@ -377,6 +377,8 @@ const Dashboard = ({navigation, route}) => {
 
   const onGraphPress = () => {
     console.log('[Dashboard] >> [onGraphPress]');
+
+    navigation.navigate(CHART_VIEW);
   };
 
   const onSettingsPress = () => {

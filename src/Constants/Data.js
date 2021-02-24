@@ -97,6 +97,21 @@ export const MONTH_PICKER_DATA = [
   },
 ];
 
+export const CHART_YEARLY_LABEL = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
 export const MAIN_EXPENSES_DATA = {
   JAN: [
     {
