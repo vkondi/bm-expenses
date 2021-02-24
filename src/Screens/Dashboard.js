@@ -12,6 +12,7 @@ import numeral from 'numeral';
 
 import SafeAreaWrapper from '@components/SafeAreaWrapper';
 import MonthPicker from './MonthPicker';
+import FilterPopup from './FilterPopup';
 
 import {
   JOOMLA,
@@ -24,7 +25,12 @@ import {MAIN_DATA_KEY} from '@constants/Constants';
 import {getCategoryIcon} from '@utilities/Utility';
 import {DETAILS_VIEW} from '@constants/NavigationConstants';
 
-const Header = ({onFilterPress, onSettingsPress, onGraphPress}) => {
+const Header = ({
+  filterValue,
+  onFilterPress,
+  onSettingsPress,
+  onGraphPress,
+}) => {
   return (
     <View style={Style.headerViewCls}>
       {/* Title */}
@@ -36,7 +42,7 @@ const Header = ({onFilterPress, onSettingsPress, onGraphPress}) => {
       <TouchableOpacity onPress={onFilterPress}>
         <FontAwesomeIcon
           icon={['fas', 'filter']}
-          color={PROGRESS_BAR_GRAY}
+          color={filterValue ? DULL_ORANGE : PROGRESS_BAR_GRAY}
           size={22}
         />
       </TouchableOpacity>
@@ -108,6 +114,8 @@ const Dashboard = ({navigation, route}) => {
   );
   const [monthTotalExpense, setMonthTotalExpense] = useState(null);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
+  const [showFilterPopup, setShowFilterPopup] = useState(false);
+  const [filterValue, setFilterValue] = useState(null);
 
   // Init
   useEffect(() => {
@@ -138,12 +146,12 @@ const Dashboard = ({navigation, route}) => {
   // To dynamically change list data based on selected month
   useEffect(() => {
     if (shortMonthKey && mainData) {
-      console.log('[Dashboard] >> Main Data OR Month Changed');
+      console.log('[Dashboard] >> Main Data OR Month OR Filter Changed');
 
       const plainData = mainData?.[shortMonthKey] ?? [];
       massageListData(plainData);
     }
-  }, [shortMonthKey, mainData]);
+  }, [shortMonthKey, mainData, filterValue]);
 
   const init = async () => {
     console.log('[Dashboard] >> [init]');
@@ -221,6 +229,11 @@ const Dashboard = ({navigation, route}) => {
     data.sort((rec1, rec2) => {
       return new Date(rec2.date) - new Date(rec1.date);
     });
+
+    // Check if any filtr is applied
+    if (filterValue) {
+      data = data.filter((rec) => rec.category === filterValue);
+    }
 
     // Data massaging
     data.forEach((item, index) => {
@@ -344,6 +357,22 @@ const Dashboard = ({navigation, route}) => {
 
   const onFilterPress = () => {
     console.log('[Dashboard] >> [onFilterPress]');
+
+    setShowFilterPopup(true);
+  };
+
+  const onFilterApply = (value) => {
+    console.log('[Dashboard] >> [onFilterApply]');
+
+    setFilterValue(value);
+    setShowFilterPopup(false);
+  };
+
+  const onFilterClear = () => {
+    console.log('[Dashboard] >> [onFilterClear]');
+
+    setFilterValue(null);
+    setShowFilterPopup(false);
   };
 
   const onGraphPress = () => {
@@ -419,6 +448,7 @@ const Dashboard = ({navigation, route}) => {
     <SafeAreaWrapper backgroundColor={JOOMLA}>
       <>
         <Header
+          filterValue={filterValue}
           onFilterPress={onFilterPress}
           onGraphPress={onGraphPress}
           onSettingsPress={onSettingsPress}
@@ -446,13 +476,19 @@ const Dashboard = ({navigation, route}) => {
         <MonthPicker
           visible={showMonthPicker}
           preselectedValue={shortMonthKey}
-          //   shortMonthName={shortMonth}
           onSelect={onMonthPickerSelect}
           onClose={onMonthPickerClose}
         />
 
+        <FilterPopup
+          visible={showFilterPopup}
+          preselectedFilter={filterValue}
+          onFilterApply={onFilterApply}
+          onFilterClear={onFilterClear}
+        />
+
         {/* Floating Plus Icon */}
-        {!showMonthPicker && (
+        {!showMonthPicker && !showFilterPopup && (
           <TouchableOpacity style={Style.addIconView} onPress={addExpense}>
             <FontAwesomeIcon icon={['fas', 'plus']} color="#2a5298" size={22} />
           </TouchableOpacity>
