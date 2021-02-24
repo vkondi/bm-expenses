@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   TextInput,
+  Platform,
 } from 'react-native';
 import moment from 'moment';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
@@ -27,6 +28,7 @@ import {DASHBOARD} from '@constants/NavigationConstants';
 
 const DetailsView = ({route, navigation}) => {
   const year = '2021';
+  const [title, setTitle] = useState('');
   const [month, setMonth] = useState('');
   const [date, setDate] = useState('');
   const [mode, setMode] = useState(null); // Possible values - ADD | EDIT
@@ -42,10 +44,12 @@ const DetailsView = ({route, navigation}) => {
 
   useEffect(() => {
     if (mode === 'ADD') {
+      setTitle('Add Expense');
       setDefaultData();
     }
 
     if (mode === 'EDIT') {
+      setTitle('Edit Expense');
       setExistingData();
     }
   }, [mode]);
@@ -204,13 +208,16 @@ const DetailsView = ({route, navigation}) => {
 
   return (
     <SafeAreaWrapper backgroundColor={JOOMLA}>
-      <>
-        <ViewContainer
-          title="Add Expense"
-          headerLeftComponent={<HeaderBack onPress={onBack} />}>
+      <ViewContainer
+        title={title}
+        headerLeftComponent={<HeaderBack onPress={onBack} />}>
+        <React.Fragment>
           <KeyboardAwareScrollView
-            //   style={Style.outerViewCls}
-            showsVerticalScrollIndicator={false}>
+            behavior={Platform.OS == 'ios' ? 'padding' : ''}
+            enabled
+            enableOnAndroid={true}
+            showsVerticalScrollIndicator={false}
+            style={{flex: 1}}>
             <Text style={Style.labelCls}>Expense Date</Text>
             <View
               style={{
@@ -333,26 +340,25 @@ const DetailsView = ({route, navigation}) => {
               })}
             </View>
           </KeyboardAwareScrollView>
-        </ViewContainer>
 
-        {/* Bottom button container */}
-        <View style={Style.btnContainer}>
-          {mode === 'EDIT' && (
-            <View style={Style.btnContainerTop}>
-              {/* Delete button */}
-              <TouchableOpacity
-                onPress={onDelete}
-                style={[
-                  Style.btnViewCls,
-                  {
-                    flex: 1,
-                  },
-                ]}>
-                <Text style={Style.btnTextCls}>DELETE</Text>
-              </TouchableOpacity>
+          {/* Bottom button container */}
+          <View style={Style.btnContainer}>
+            {mode === 'EDIT' && (
+              <View style={Style.btnContainerTop}>
+                {/* Delete button */}
+                <TouchableOpacity
+                  onPress={onDelete}
+                  style={[
+                    Style.btnViewCls,
+                    {
+                      flex: 1,
+                    },
+                  ]}>
+                  <Text style={Style.btnTextCls}>DELETE</Text>
+                </TouchableOpacity>
 
-              {/* Save As New Button */}
-              {/* <TouchableOpacity
+                {/* Save As New Button */}
+                {/* <TouchableOpacity
                 onPress={onSaveAsNew}
                 style={[
                   Style.btnViewCls,
@@ -365,15 +371,16 @@ const DetailsView = ({route, navigation}) => {
                 ]}>
                 <Text style={Style.btnTextCls}>SAVE AS NEW</Text>
               </TouchableOpacity> */}
-            </View>
-          )}
+              </View>
+            )}
 
-          {/* Save Button */}
-          <TouchableOpacity onPress={onSave} style={Style.btnViewCls}>
-            <Text style={Style.btnTextCls}>SAVE</Text>
-          </TouchableOpacity>
-        </View>
-      </>
+            {/* Save Button */}
+            <TouchableOpacity onPress={onSave} style={Style.btnViewCls}>
+              <Text style={Style.btnTextCls}>SAVE</Text>
+            </TouchableOpacity>
+          </View>
+        </React.Fragment>
+      </ViewContainer>
     </SafeAreaWrapper>
   );
 };
@@ -382,7 +389,6 @@ const Style = StyleSheet.create({
   btnContainer: {
     backgroundColor: PROGRESS_BAR_GRAY,
     borderRadius: 10,
-    marginHorizontal: 30,
     marginBottom: 10,
     overflow: 'hidden',
   },

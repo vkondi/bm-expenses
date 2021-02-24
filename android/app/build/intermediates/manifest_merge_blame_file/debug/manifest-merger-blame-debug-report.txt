@@ -47,8 +47,8 @@
 28-->/Users/test/Documents/Vishwajeet/LocalWork/Repo/Expenses/android/app/src/main/AndroidManifest.xml:15:9-41
 29            android:launchMode="singleTask"
 29-->/Users/test/Documents/Vishwajeet/LocalWork/Repo/Expenses/android/app/src/main/AndroidManifest.xml:17:9-40
-30            android:windowSoftInputMode="adjustResize" >
-30-->/Users/test/Documents/Vishwajeet/LocalWork/Repo/Expenses/android/app/src/main/AndroidManifest.xml:18:9-51
+30            android:windowSoftInputMode="adjustPan" >
+30-->/Users/test/Documents/Vishwajeet/LocalWork/Repo/Expenses/android/app/src/main/AndroidManifest.xml:18:9-48
 31            <intent-filter>
 31-->/Users/test/Documents/Vishwajeet/LocalWork/Repo/Expenses/android/app/src/main/AndroidManifest.xml:19:9-22:25
 32                <action android:name="android.intent.action.MAIN" />
