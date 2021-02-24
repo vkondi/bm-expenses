@@ -13,23 +13,12 @@ const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 const chartHeight = (screenHeight * 60) / 100;
 const chartFixedHeight = 400;
-const tempChartData = [
-  Math.random() * 100,
-  Math.random() * 100,
-  Math.random() * 100,
-  Math.random() * 300,
-  Math.random() * 100,
-  Math.random() * 100,
-  400,
-  Math.random() * 100,
-  Math.random() * 100,
-  Math.random() * 100,
-  Math.random() * 100,
-  Math.random() * 100,
-];
+const defaultChartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 const ChartView = ({route, navigation}) => {
-  const [chartData, setChartData] = useState(tempChartData);
+  const [chartData, setChartData] = useState(
+    route?.params?.chartData ?? defaultChartData,
+  );
 
   const onBack = () => {
     console.log('[ChartView] >> [onBack]');

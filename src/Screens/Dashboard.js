@@ -375,10 +375,30 @@ const Dashboard = ({navigation, route}) => {
     setShowFilterPopup(false);
   };
 
-  const onGraphPress = () => {
+  const onGraphPress = async () => {
     console.log('[Dashboard] >> [onGraphPress]');
 
-    navigation.navigate(CHART_VIEW);
+    const data = await prepareChartData();
+    navigation.navigate(CHART_VIEW, {
+      chartData: data,
+    });
+  };
+
+  const prepareChartData = () => {
+    console.log('[Dashboard] >> [prepareChartData]');
+
+    const yearlyTotalArray = [];
+    const monthKeysArray = Object.keys(mainData);
+
+    monthKeysArray.forEach((key) => {
+      const currentMonthTotal = mainData[key].reduce((value, record) => {
+        return parseFloat(value) + parseFloat(record.amount);
+      }, 0);
+
+      yearlyTotalArray.push(currentMonthTotal);
+    });
+
+    return yearlyTotalArray;
   };
 
   const onSettingsPress = () => {
