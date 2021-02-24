@@ -23,14 +23,13 @@ import {
 import {MAIN_EXPENSES_DATA} from '@constants/Data';
 import {MAIN_DATA_KEY} from '@constants/Constants';
 import {getCategoryIcon} from '@utilities/Utility';
-import {DETAILS_VIEW, CHART_VIEW} from '@constants/NavigationConstants';
+import {
+  DETAILS_VIEW,
+  CHART_VIEW,
+  CALCULATE_BILLS,
+} from '@constants/NavigationConstants';
 
-const Header = ({
-  filterValue,
-  onFilterPress,
-  onSettingsPress,
-  onGraphPress,
-}) => {
+const Header = ({filterValue, onFilterPress, onCodePress, onGraphPress}) => {
   return (
     <View style={Style.headerViewCls}>
       {/* Title */}
@@ -57,10 +56,10 @@ const Header = ({
         />
       </TouchableOpacity>
 
-      {/* Settings Icon */}
-      <TouchableOpacity onPress={onSettingsPress}>
+      {/* Code Icon */}
+      <TouchableOpacity onPress={onCodePress}>
         <FontAwesomeIcon
-          icon={['fas', 'cog']}
+          icon={['fas', 'code']}
           color={PROGRESS_BAR_GRAY}
           size={22}
           style={Style.settingsIconCls}
@@ -401,8 +400,12 @@ const Dashboard = ({navigation, route}) => {
     return yearlyTotalArray;
   };
 
-  const onSettingsPress = () => {
-    console.log('[Dashboard] >> [onSettingsPress]');
+  const onCodePress = () => {
+    console.log('[Dashboard] >> [onCodePress]');
+
+    navigation.navigate(CALCULATE_BILLS, {
+      mainData,
+    });
   };
 
   const onMonthPress = () => {
@@ -473,7 +476,7 @@ const Dashboard = ({navigation, route}) => {
           filterValue={filterValue}
           onFilterPress={onFilterPress}
           onGraphPress={onGraphPress}
-          onSettingsPress={onSettingsPress}
+          onCodePress={onCodePress}
         />
         <SubHeader
           monthName={shortMonth}
