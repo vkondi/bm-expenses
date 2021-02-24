@@ -96,7 +96,7 @@ function EmptyListView() {
   );
 }
 
-const Dashboard = ({navigation}) => {
+const Dashboard = ({navigation, route}) => {
   const currentShortMonth = new Date().toLocaleString('default', {
     month: 'short',
   });
@@ -114,8 +114,32 @@ const Dashboard = ({navigation}) => {
     init();
   }, []);
 
+  // Handler to receive updated navigation parameters
+  useEffect(() => {
+    const params = route?.params ?? {};
+    const type = params?.type ?? null;
+    const record = params?.record ?? null;
+
+    switch (type) {
+      case 'ADD_EXPENSE':
+        if (record) addNewExpense(record);
+        break;
+      case 'EDIT_EXPENSE':
+        if (record) editExpense(record);
+        break;
+      case 'DELETE_EXPENSE':
+        if (record) deleteExpense(record);
+        break;
+      default:
+        break;
+    }
+  }, [route?.params]);
+
+  // To dynamically change list data based on selected month
   useEffect(() => {
     if (shortMonthKey && mainData) {
+      console.log('[Dashboard] >> Main Data OR Month Changed');
+      
       const plainData = mainData?.[shortMonthKey] ?? [];
       massageListData(plainData);
     }
@@ -153,6 +177,21 @@ const Dashboard = ({navigation}) => {
       init();
     } catch (error) {
       console.log('[Dashboard][setInitialStorageData] >> Exception: ', error);
+    }
+  };
+
+  const updateMainData = async (updatedMainData) => {
+    console.log('[Dashboard] >> [updateMainData]');
+
+    try {
+      setMainData(updatedMainData);
+
+      await AsyncStorage.setItem(
+        MAIN_DATA_KEY,
+        JSON.stringify(updatedMainData),
+      );
+    } catch (error) {
+      console.log('[Dashboard][updateMainData] >> Exception: ', error);
     }
   };
 
@@ -221,6 +260,34 @@ const Dashboard = ({navigation}) => {
 
     setListData(finalListData);
     setMonthTotalExpense(numeral(totalExpense).format('0,0.00'));
+  };
+
+  const addNewExpense = (record) => {
+    console.log('[Dashboard] >> [addNewExpense]');
+
+    let tempMainData = mainData;
+    const recordDate = record?.date ?? '';
+    const recordShortMonth = new Date(recordDate).toLocaleString('default', {
+      month: 'short',
+    });
+    const recordShortMonthKey = recordShortMonth.toUpperCase();
+
+    tempMainData[recordShortMonthKey].push(record);
+
+    // If new record is added in current selected month, then update the list
+    if (recordShortMonthKey === shortMonthKey)
+      massageListData(tempMainData[recordShortMonthKey]);
+
+    // Call method to update main data in state and storage
+    updateMainData(tempMainData);
+  };
+
+  const editExpense = (record) => {
+    console.log('[Dashboard] >> [editExpense]');
+  };
+
+  const deleteExpense = (record) => {
+    console.log('[Dashboard] >> [deleteExpense]');
   };
 
   const onFilterPress = () => {
