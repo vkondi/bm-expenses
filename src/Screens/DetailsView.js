@@ -75,6 +75,17 @@ const DetailsView = ({route, navigation}) => {
     console.log('[DetailsView] >> [setExistingData]');
 
     const params = route?.params ?? {};
+    const record = params?.record ?? null;
+
+    if (record) {
+      const splitShortDate = record.shortDate.split('/');
+
+      setMonth(splitShortDate[1]);
+      setDate(splitShortDate[0]);
+      setAmount(record?.amount ? String(record.amount) : '');
+      setDescription(record?.description ?? '');
+      setSelectedCategory(record?.category);
+    }
   };
 
   const onMonthChange = (value) => {
@@ -133,30 +144,41 @@ const DetailsView = ({route, navigation}) => {
     console.log('[DetailsView] >> [onSave]');
 
     // Date validation
-    const isDateValid = moment(
-      `2021/${month}/${date}`,
-      'YYYY/MM/DD',
-      true,
-    ).isValid();
-    setDateError(!isDateValid);
-    if (!isDateValid) return;
+    if (!validateDate()) return;
 
     // Retrieve Expense data
     const formData = getFormData();
 
     navigation.navigate(DASHBOARD, {
-      type: 'ADD_EXPENSE',
+      type: mode === 'ADD' ? 'ADD_EXPENSE' : 'EDIT_EXPENSE',
       record: {
         ...formData,
       },
     });
   };
 
+  const validateDate = () => {
+    console.log('[DetailsView] >> [validateDate]');
+
+    // Date validation
+    const isDateValid = moment(
+      `2021/${month}/${date}`,
+      'YYYY/MM/DD',
+      true,
+    ).isValid();
+    setDateError(!isDateValid);
+
+    return isDateValid;
+  };
+
   const getFormData = () => {
     console.log('[DetailsView] >> [getFormData]');
 
+    const recordID =
+      mode === 'ADD' ? new Date().getTime() : route?.params?.record?.id;
+
     return {
-      id: new Date().getTime(),
+      id: recordID,
       description: description ?? selectedCategory,
       category: selectedCategory,
       amount: amount ?? 0,
@@ -171,6 +193,13 @@ const DetailsView = ({route, navigation}) => {
 
   const onDelete = () => {
     console.log('[DetailsView] >> [onDelete]');
+
+    navigation.navigate(DASHBOARD, {
+      type: 'DELETE_EXPENSE',
+      record: {
+        ...route?.params?.record,
+      },
+    });
   };
 
   return (
@@ -323,7 +352,7 @@ const DetailsView = ({route, navigation}) => {
               </TouchableOpacity>
 
               {/* Save As New Button */}
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={onSaveAsNew}
                 style={[
                   Style.btnViewCls,
@@ -335,7 +364,7 @@ const DetailsView = ({route, navigation}) => {
                   },
                 ]}>
                 <Text style={Style.btnTextCls}>SAVE AS NEW</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           )}
 

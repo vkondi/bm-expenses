@@ -139,7 +139,7 @@ const Dashboard = ({navigation, route}) => {
   useEffect(() => {
     if (shortMonthKey && mainData) {
       console.log('[Dashboard] >> Main Data OR Month Changed');
-      
+
       const plainData = mainData?.[shortMonthKey] ?? [];
       massageListData(plainData);
     }
@@ -284,10 +284,62 @@ const Dashboard = ({navigation, route}) => {
 
   const editExpense = (record) => {
     console.log('[Dashboard] >> [editExpense]');
+
+    let tempMainData = mainData;
+    const recordDate = record?.date ?? '';
+    const recordShortMonth = new Date(recordDate).toLocaleString('default', {
+      month: 'short',
+    });
+    const recordShortMonthKey = recordShortMonth.toUpperCase();
+
+    // Iterate over and update the modified record
+    tempMainData[recordShortMonthKey] = tempMainData[recordShortMonthKey].map(
+      (item) => {
+        if (item.id == record.id) {
+          // Return the record with updated values
+          return {
+            ...item,
+            description: record?.description,
+            category: record?.category,
+            amount: record?.amount,
+            date: record?.date,
+            shortDate: record?.shortDate,
+          };
+        } else {
+          return item;
+        }
+      },
+    );
+
+    // If new record is added in current selected month, then update the list
+    if (recordShortMonthKey === shortMonthKey)
+      massageListData(tempMainData[recordShortMonthKey]);
+
+    // Call method to update main data in state and storage
+    updateMainData(tempMainData);
   };
 
   const deleteExpense = (record) => {
     console.log('[Dashboard] >> [deleteExpense]');
+
+    let tempMainData = mainData;
+    const recordDate = record?.date ?? '';
+    const recordShortMonth = new Date(recordDate).toLocaleString('default', {
+      month: 'short',
+    });
+    const recordShortMonthKey = recordShortMonth.toUpperCase();
+
+    // Iterate over and filter out the deleted record
+    tempMainData[recordShortMonthKey] = tempMainData[
+      recordShortMonthKey
+    ].filter((item) => item.id != record.id);
+
+    // If new record is added in current selected month, then update the list
+    if (recordShortMonthKey === shortMonthKey)
+      massageListData(tempMainData[recordShortMonthKey]);
+
+    // Call method to update main data in state and storage
+    updateMainData(tempMainData);
   };
 
   const onFilterPress = () => {
@@ -346,7 +398,17 @@ const Dashboard = ({navigation, route}) => {
   };
 
   const renderListItem = ({item, index}) => {
-    return <ListItem item={item} key={index} />;
+    return <ListItem item={item} key={index} onPress={onExpenseItemPress} />;
+  };
+
+  const onExpenseItemPress = (item) => {
+    console.log('[Dashboard] >> [onExpenseItemPress]');
+
+    navigation.navigate(DETAILS_VIEW, {
+      shortMonthKey,
+      mode: 'EDIT',
+      record: item,
+    });
   };
 
   const renderSectionHeader = ({section: {title}}) => {
@@ -400,14 +462,19 @@ const Dashboard = ({navigation, route}) => {
   );
 };
 
-function ListItem({item}) {
+function ListItem({item, onPress}) {
+  const onItemPress = () => {
+    if (onPress) onPress(item);
+  };
   return (
-    <View
+    <TouchableOpacity
+      onPress={onItemPress}
+      activeOpacity={0.9}
       style={[Style.listItemViewCls, {marginBottom: item.isLastItem ? 50 : 0}]}>
-      <FontAwesomeIcon icon={item.icon} color={BRIGHT_ORANGE} size={25} />
+      <FontAwesomeIcon icon={item.icon} color={BRIGHT_ORANGE} size={23} />
       <Text style={Style.listItemDescription}>{item.description}</Text>
       <Text style={Style.listItemAmount}>{item.formattedAmount}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -415,7 +482,7 @@ const Style = StyleSheet.create({
   listItemViewCls: {
     flexDirection: 'row',
     marginVertical: 5,
-    minHeight: 50,
+    minHeight: 60,
     backgroundColor: PROGRESS_BAR_GRAY,
     borderRadius: 10,
     alignItems: 'center',
