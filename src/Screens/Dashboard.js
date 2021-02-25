@@ -9,6 +9,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import numeral from 'numeral';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 import SafeAreaWrapper from '@components/SafeAreaWrapper';
 import MonthPicker from './MonthPicker';
@@ -28,6 +30,7 @@ import {
   CHART_VIEW,
   CALCULATE_BILLS,
 } from '@constants/NavigationConstants';
+import {setMainData, setFilterValue} from '@redux/Actions';
 
 const Header = ({filterValue, onFilterPress, onCodePress, onGraphPress}) => {
   return (
@@ -101,20 +104,17 @@ function EmptyListView() {
   );
 }
 
-const Dashboard = ({navigation, route}) => {
-  const currentShortMonth = new Date().toLocaleString('default', {
-    month: 'short',
-  });
-  const [mainData, setMainData] = useState(null);
+const Dashboard = ({navigation, route, ...props}) => {
   const [listData, setListData] = useState(null);
-  const [shortMonth, setShortMonth] = useState(currentShortMonth);
+  const [shortMonth, setShortMonth] = useState(
+    props.reduxState?.currentShortMonth,
+  );
   const [shortMonthKey, setShortMonthKey] = useState(
-    currentShortMonth.toUpperCase(),
+    props.reduxState?.currentShortMonth.toUpperCase(),
   );
   const [monthTotalExpense, setMonthTotalExpense] = useState(null);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [showFilterPopup, setShowFilterPopup] = useState(false);
-  const [filterValue, setFilterValue] = useState(null);
 
   // Init
   useEffect(() => {
@@ -144,13 +144,13 @@ const Dashboard = ({navigation, route}) => {
 
   // To dynamically change list data based on selected month
   useEffect(() => {
-    if (shortMonthKey && mainData) {
+    if (shortMonthKey && props.reduxState.mainData) {
       console.log('[Dashboard] >> Main Data OR Month OR Filter Changed');
 
-      const plainData = mainData?.[shortMonthKey] ?? [];
+      const plainData = props.reduxState.mainData?.[shortMonthKey] ?? [];
       massageListData(plainData);
     }
-  }, [shortMonthKey, mainData, filterValue]);
+  }, [shortMonthKey, props.reduxState.mainData, props.reduxState?.filterValue]);
 
   const init = async () => {
     console.log('[Dashboard] >> [init]');
@@ -162,7 +162,9 @@ const Dashboard = ({navigation, route}) => {
         if (!storageMainData) return;
 
         const parsedMainData = JSON.parse(storageMainData);
-        if (parsedMainData) setMainData(parsedMainData);
+        if (parsedMainData) {
+          props.setMainData(parsedMainData);
+        }
       } else {
         setInitialStorageData();
       }
@@ -191,7 +193,7 @@ const Dashboard = ({navigation, route}) => {
     console.log('[Dashboard] >> [updateMainData]');
 
     try {
-      setMainData(updatedMainData);
+      props.setMainData(updatedMainData);
 
       await AsyncStorage.setItem(
         MAIN_DATA_KEY,
@@ -230,8 +232,10 @@ const Dashboard = ({navigation, route}) => {
     });
 
     // Check if any filtr is applied
-    if (filterValue) {
-      data = data.filter((rec) => rec.category === filterValue);
+    if (props.reduxState?.filterValue) {
+      data = data.filter(
+        (rec) => rec.category === props.reduxState?.filterValue,
+      );
     }
 
     // Data massaging
@@ -277,7 +281,7 @@ const Dashboard = ({navigation, route}) => {
   const addNewExpense = (record) => {
     console.log('[Dashboard] >> [addNewExpense]');
 
-    let tempMainData = mainData;
+    let tempMainData = props.reduxState.mainData;
     const recordDate = record?.date ?? '';
     const recordShortMonth = new Date(recordDate).toLocaleString('default', {
       month: 'short',
@@ -297,7 +301,7 @@ const Dashboard = ({navigation, route}) => {
   const editExpense = (record) => {
     console.log('[Dashboard] >> [editExpense]');
 
-    let tempMainData = mainData;
+    let tempMainData = props.reduxState.mainData;
     const recordDate = record?.date ?? '';
     const recordShortMonth = new Date(recordDate).toLocaleString('default', {
       month: 'short',
@@ -334,7 +338,7 @@ const Dashboard = ({navigation, route}) => {
   const deleteExpense = (record) => {
     console.log('[Dashboard] >> [deleteExpense]');
 
-    let tempMainData = mainData;
+    let tempMainData = props.reduxState.mainData;
     const recordDate = record?.date ?? '';
     const recordShortMonth = new Date(recordDate).toLocaleString('default', {
       month: 'short',
@@ -363,14 +367,14 @@ const Dashboard = ({navigation, route}) => {
   const onFilterApply = (value) => {
     console.log('[Dashboard] >> [onFilterApply]');
 
-    setFilterValue(value);
+    props.setFilterValue(value);
     setShowFilterPopup(false);
   };
 
   const onFilterClear = () => {
     console.log('[Dashboard] >> [onFilterClear]');
 
-    setFilterValue(null);
+    props.setFilterValue(null);
     setShowFilterPopup(false);
   };
 
@@ -387,12 +391,15 @@ const Dashboard = ({navigation, route}) => {
     console.log('[Dashboard] >> [prepareChartData]');
 
     const yearlyTotalArray = [];
-    const monthKeysArray = Object.keys(mainData);
+    const monthKeysArray = Object.keys(props.reduxState.mainData);
 
     monthKeysArray.forEach((key) => {
-      const currentMonthTotal = mainData[key].reduce((value, record) => {
-        return parseFloat(value) + parseFloat(record.amount);
-      }, 0);
+      const currentMonthTotal = props.reduxState.mainData[key].reduce(
+        (value, record) => {
+          return parseFloat(value) + parseFloat(record.amount);
+        },
+        0,
+      );
 
       yearlyTotalArray.push(currentMonthTotal);
     });
@@ -403,9 +410,7 @@ const Dashboard = ({navigation, route}) => {
   const onCodePress = () => {
     console.log('[Dashboard] >> [onCodePress]');
 
-    navigation.navigate(CALCULATE_BILLS, {
-      mainData,
-    });
+    navigation.navigate(CALCULATE_BILLS);
   };
 
   const onMonthPress = () => {
@@ -473,7 +478,7 @@ const Dashboard = ({navigation, route}) => {
     <SafeAreaWrapper backgroundColor={JOOMLA}>
       <>
         <Header
-          filterValue={filterValue}
+          filterValue={props.reduxState?.filterValue}
           onFilterPress={onFilterPress}
           onGraphPress={onGraphPress}
           onCodePress={onCodePress}
@@ -507,7 +512,7 @@ const Dashboard = ({navigation, route}) => {
 
         <FilterPopup
           visible={showFilterPopup}
-          preselectedFilter={filterValue}
+          preselectedFilter={props.reduxState?.filterValue}
           onFilterApply={onFilterApply}
           onFilterClear={onFilterClear}
         />
@@ -652,4 +657,18 @@ const Style = StyleSheet.create({
   },
 });
 
-export default Dashboard;
+const mapStateToProps = (state) => {
+  return state;
+};
+
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators(
+    {
+      setMainData,
+      setFilterValue,
+    },
+    dispatch,
+  );
+
+// export default Dashboard;
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

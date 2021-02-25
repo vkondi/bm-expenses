@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,10 +6,10 @@ import {
   TextInput,
   TouchableOpacity,
   SectionList,
-  ScrollView,
 } from 'react-native';
 import numeral from 'numeral';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {connect} from 'react-redux';
 
 import SafeAreaWrapper from '@components/SafeAreaWrapper';
 import ViewContainer from '@components/ViewContainer';
@@ -25,9 +25,8 @@ import {
 import {MONTH_PICKER_DATA} from '@constants/Data';
 import {getCategoryIcon} from '@utilities/Utility';
 
-const CalculateBills = ({route, navigation}) => {
-  let listRef = useRef();
-  const mainData = route?.params?.mainData ?? {};
+const CalculateBills = ({route, navigation, ...props}) => {
+  const mainData = props.reduxState?.mainData ?? {};
   const [monthlyBudget, setMonthlyBudget] = useState('10000');
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [showCalculate, setShowCalculate] = useState(false);
@@ -417,4 +416,8 @@ const Style = StyleSheet.create({
   },
 });
 
-export default CalculateBills;
+const mapStateToProps = (state) => {
+  return state;
+};
+
+export default connect(mapStateToProps)(CalculateBills);

@@ -25,6 +25,7 @@ module.exports = {
           '@components': './src/Components',
           '@constants': './src/Constants',
           '@utilities': './src/Utilities',
+          '@redux': './src/Redux',
         },
       },
     ],
